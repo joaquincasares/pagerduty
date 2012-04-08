@@ -18,17 +18,17 @@ options = False
 config = False
 secondary = False
 
-def email_msg(msg_to, text, html):
+def email_msg(subject, msg_to, text, html):
     msg_from = '"Pager Duty Scheduling"'
 
     # Create message container - the correct MIME type is multipart/alternative.
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = "On call this week"
+    msg['Subject'] = subject
     msg['From'] = msg_from
-    msg['To'] = msg_to
+    msg['To'] = ''
 
     # Setup bcc email addresses
-    bcc1 = ''
+    bcc1 = msg_to
     bcc2 = ''
 
     part1 = MIMEText(text, 'plain')
@@ -79,6 +79,16 @@ def format_results(primary, secondary=False, html=False):
         return '<table border="1" cellpadding="5">\n%s</table>' % result
     return result
 
+def extract_emails(primary, secondary=False):
+    email_list = []
+    for key in primary.keys():
+        email_list.append(primary[key]['agent_email'])
+    if secondary:
+        for key in secondary.keys():
+            email_list.append(secondary[key]['agent_email'])
+    email_list = set(email_list)
+    email_list = sorted(email_list)
+    return email_list
 
 def list_user_90_days(user):
     global secondary
@@ -115,6 +125,36 @@ def list_week():
         secondary = pagerduty.get_weekly_schedule(secondary)
     print format_results(primary, secondary)
 
+def email_today():
+    global secondary
+    primary = pagerduty.get_daily_schedule()
+    if secondary:
+        secondary = pagerduty.get_daily_schedule(secondary)
+
+    email = """Hello,
+
+I just wanted to let you know that you're on call today.
+
+Once again, the Support Team appreciates your contributions. However, if you cannot fulfill your duty, please notify your backup immediately. It is vital for you to communicate this with your teammate.
+
+%s
+Thanks,
+The Support Team
+    """
+
+    txt = email % format_results(primary, secondary)
+    html = email.replace('\n', '<br>\n') % format_results(primary, secondary, html=True)
+
+    print txt
+    email_list = extract_emails(primary, secondary)
+    print 'Email list: %s' % email_list
+
+    if bypass_prompts or raw_input('Send email? [y/N] ').lower() == 'y':
+        email_msg("You're on call today", email_list, txt, html)
+        print "Daily Support Schedule Emailed!"
+    else:
+        print "Email not sent."
+
 def email_week():
     global secondary
     primary = pagerduty.get_weekly_schedule()
@@ -136,8 +176,11 @@ The Support Team
     html = email.replace('\n', '<br>\n') % format_results(primary, secondary, html=True)
 
     print txt
-    if raw_input('Send email? [y/N] ').lower() == 'y':
-        email_msg(config.get('Cli', 'to_email'), txt, html)
+    email_list = extract_emails(primary, secondary)
+    print 'Email list: %s' % email_list
+
+    if bypass_prompts or raw_input('Send email? [y/N] ').lower() == 'y':
+        email_msg("You're on call this week", email_list, txt, html)
         print "Weekly Support Schedule Emailed!"
     else:
         print "Email not sent."
@@ -147,6 +190,7 @@ The Support Team
 def read_configurations():
     global config
     global secondary
+    global bypass_prompts
     configfile = os.path.join(os.path.expanduser('~'), '.pagerduty.cfg')
     if not os.path.exists(configfile):
         sys.stderr.write('Move pagerduty.cfg to ~/.pagerduty.cfg to begin.\n')
@@ -155,6 +199,8 @@ def read_configurations():
     config.read(configfile)
 
     secondary = config.get('Cli', 'secondary_schedule') if config.has_option('Cli', 'secondary_schedule') else False
+    bypass_prompts = config.get('Cli', 'bypass_prompts') if config.has_option('Cli', 'bypass_prompts') else False
+    bypass_prompts = bypass_prompts.lower() == 'true'
 
 def parse_options():
     global options
@@ -170,10 +216,9 @@ def parse_options():
                       action="store_true", help="Show the week's schedule")
     parser.add_option("-l", "--list", dest="list",
                       action="store_true", help="List the next 90 days")
-    # Next update
-    # parser.add_option("-t", "--email_today", dest="email_today",
-    #                   action="store_true", help="Email the today's schedule")
-    parser.add_option("-e", "--email_week", dest="email_week",
+    parser.add_option("--email_today", dest="email_today",
+                      action="store_true", help="Email the today's schedule")
+    parser.add_option("--email_week", dest="email_week",
                       action="store_true", help="Email the current week's schedule")
 
     (options, args) = parser.parse_args()
@@ -193,6 +238,8 @@ def main():
             list_tomorrow()
         elif options.week:
             list_week()
+        elif options.email_today:
+            email_today()
         elif options.email_week:
             email_week()
     else:

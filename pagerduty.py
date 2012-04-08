@@ -100,6 +100,7 @@ def get_user_schedule(schedule_id=False, needle_name=False, schedule=False):
             shift_start = time.strftime('%m.%d.%Y - %A (%I%p PST)', start_date)
             result[start_date] = {
                 'agent_name': agent_name,
+                'agent_email': agent_email,
                 'shift_start': shift_start
             }
     return result
