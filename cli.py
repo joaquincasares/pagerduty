@@ -133,7 +133,7 @@ def email_today():
 
     email = """Hello,
 
-I just wanted to let you know that you're on call today.
+We wanted to notify you that you're on call today.
 
 Once again, the Support Team appreciates your contributions. However, if you cannot fulfill your duty, please notify your backup immediately. It is vital for you to communicate this with your teammate.
 
