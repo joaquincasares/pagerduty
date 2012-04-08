@@ -24,6 +24,7 @@ def get_authentication():
     global admin_email
     global admin_password
     global primary_schedule
+    global shift_start_hour
     global authenticated
 
     if authenticated:
@@ -42,6 +43,7 @@ def get_authentication():
         admin_email = config.get('PagerDuty', 'email') if config.has_option('PagerDuty', 'email') else raw_input('PagerDuty Email Address: ')
         admin_password = config.get('PagerDuty', 'pass') if config.has_option('PagerDuty', 'pass') else getpass.getpass()
         primary_schedule = config.get('PagerDuty', 'primary_schedule') if config.has_option('PagerDuty', 'primary_schedule') else raw_input('PagerDuty Schedule ID: ')
+        shift_start_hour = int(config.get('PagerDuty', 'shift_start_hour')) * -1 if config.has_option('PagerDuty', 'shift_start_hour') else int(raw_input('Schedule Start Hour: ')) * -1
 
     authenticated = 'In Progress'
     if "<error>" in get_schedule(primary_schedule):
@@ -61,7 +63,7 @@ def get_schedule(schedule_id=False, time_period=False, offset_days=False):
     offset = datetime.timedelta(days=0)
     if offset_days:
         offset = datetime.timedelta(days=offset_days)
-    now = datetime.datetime.today() + offset # + datetime.timedelta(hours=0)
+    now = datetime.datetime.today() + offset + datetime.timedelta(hours=shift_start_hour)
 
     start_date = now.strftime('%Y-%m-%d')
     if time_period == 'day':
