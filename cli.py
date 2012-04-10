@@ -26,6 +26,8 @@ def email_msg(subject, msg_to, text, html):
     msg['Subject'] = subject
     msg['From'] = msg_from
     msg['To'] = ''
+    if reply_to:
+        msg.add_header('reply-to', reply_to)
 
     # Setup bcc email addresses
     bcc1 = msg_to
@@ -191,6 +193,7 @@ def read_configurations():
     global config
     global secondary
     global bypass_prompts
+    global reply_to
     configfile = os.path.join(os.path.expanduser('~'), '.pagerduty.cfg')
     if not os.path.exists(configfile):
         sys.stderr.write('Move pagerduty.cfg to ~/.pagerduty.cfg to begin.\n')
@@ -201,6 +204,7 @@ def read_configurations():
     secondary = config.get('Cli', 'secondary_schedule') if config.has_option('Cli', 'secondary_schedule') else False
     bypass_prompts = config.get('Cli', 'bypass_prompts') if config.has_option('Cli', 'bypass_prompts') else False
     bypass_prompts = bypass_prompts.lower() == 'true'
+    reply_to = config.get('Cli', 'reply_to') if config.has_option('Cli', 'reply_to') else False
 
 def parse_options():
     global options
