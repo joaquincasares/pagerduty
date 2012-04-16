@@ -30,8 +30,8 @@ def email_msg(subject, msg_to, text, html):
         msg.add_header('reply-to', reply_to)
 
     # Setup bcc email addresses
-    bcc1 = msg_to
-    bcc2 = ''
+    bcc = ['']
+    msg_to = filter(None, msg_to + bcc)
 
     part1 = MIMEText(text, 'plain')
     msg.attach(part1)
@@ -43,7 +43,7 @@ def email_msg(subject, msg_to, text, html):
     s = smtplib.SMTP(config.get('SMTP', 'server'))
     s.starttls()
     s.login(config.get('SMTP', 'email'),config.get('SMTP', 'password'))
-    s.sendmail(msg_from, [msg_to, bcc1, bcc2], msg.as_string())
+    s.sendmail(msg_from, msg_to, msg.as_string())
     s.quit()
 
 
