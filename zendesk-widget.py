@@ -53,6 +53,8 @@ def generate_page():
 
     return """Content-Type: text/html\n
     <link href="pagerduty.css" media="all" rel="stylesheet" type="text/css" />\n%s
+    <br/>
+    <a href="full-schedule.py">Full Schedule</a>
     """ % format_results(primary, secondary)
 
 def save_and_print(d):
