@@ -9,17 +9,21 @@ body {
     font-style: normal;
     font-variant: normal;
     color: #333;
+    background: #001A26;
 }
 
 table {
     /*border-style: none;*/
     border-collapse: collapse;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 30 auto;
 }
 
 tr:nth-child(odd) {
     background-color: #B6E3EC;
+}
+
+tr:nth-child(even) {
+    background-color: #FFFFFF;
 }
 
 td{
