@@ -9,7 +9,10 @@ body {
     font-style: normal;
     font-variant: normal;
     color: #333;
-    background: #001A26;
+}
+
+.full_schedule{
+    background: #EEEEEE;
 }
 
 table {

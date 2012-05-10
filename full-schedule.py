@@ -44,7 +44,9 @@ def generate_page():
         d.close()
 
     return """Content-Type: text/html\n
-    <link href="pagerduty.css" media="all" rel="stylesheet" type="text/css" />\n%s
+    <link href="pagerduty.css" media="all" rel="stylesheet" type="text/css" />
+    <body class='full_schedule'>\n%s
+    </body>
     """ % result
 
 def main():
