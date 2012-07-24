@@ -26,7 +26,11 @@ def read_configurations():
 def get_open_incidents():
     open_incidents_count = pagerduty.get_open_incidents(just_count=True)['total']
     if open_incidents_count:
-        return '<h3 class="alert"><a href="https://riptano.pagerduty.com/incidents">Open tickets: %s!</a></h3>\n' % open_incidents_count
+        return '''
+        <h3><a class="alert" href="https://riptano.pagerduty.com/incidents" target="_blank">
+            Open tickets: %s!
+        </a></h3>
+        <br/>\n''' % open_incidents_count
 
 def format_results(primary, secondary=False):
     if not secondary:
