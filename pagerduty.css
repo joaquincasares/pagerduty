@@ -39,6 +39,6 @@ a {
     color: #1A6690;
 }
 
-a .alert {
+a.alert {
     color: red;
 }

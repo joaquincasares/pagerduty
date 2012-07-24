@@ -28,7 +28,7 @@ def get_open_incidents():
     if open_incidents_count:
         return '''
         <h3><a class="alert" href="https://riptano.pagerduty.com/incidents" target="_blank">
-            Open tickets: %s!
+            Open tickets: %s
         </a></h3>
         <br/>\n''' % open_incidents_count
 
