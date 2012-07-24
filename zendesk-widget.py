@@ -31,6 +31,7 @@ def get_open_incidents():
             Open tickets: %s
         </a></h3>
         <br/>\n''' % open_incidents_count
+    return ''
 
 def format_results(primary, secondary=False):
     if not secondary:
