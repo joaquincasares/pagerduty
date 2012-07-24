@@ -123,6 +123,21 @@ def get_weekly_schedule(schedule_id=False):
     return get_user_schedule(schedule_id, schedule=schedule)
 
 
+def get_open_incidents(just_count=False):
+    get_authentication()
+    def basic_authorization(user, password):
+        s = user + ":" + password
+        return "Basic " + s.encode("base64").rstrip()
+
+    count_parameter = ''
+    if just_count:
+        count_parameter = '/count'
+
+    req = urllib2.Request("https://%s.pagerduty.com/api/v1/incidents%s?status=triggered,acknowledged" %
+                              (domain, count_parameter),
+                              headers = {"Authorization": basic_authorization(admin_email, admin_password)})
+    f = urllib2.urlopen(req)
+    return json.loads(f.read())
 
 if __name__ == "__main__":
     print 'Running basic tests:'
@@ -135,3 +150,7 @@ if __name__ == "__main__":
     print get_tomorrows_schedule()
     print '====================='
     print get_weekly_schedule()
+    print '====================='
+    print get_open_incidents()
+    print '====================='
+    print get_open_incidents(just_count=True)

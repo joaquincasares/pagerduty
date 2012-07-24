@@ -38,3 +38,7 @@ a {
     text-decoration: none;
     color: #1A6690;
 }
+
+.alert {
+    color: red;
+}

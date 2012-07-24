@@ -23,6 +23,11 @@ def read_configurations():
 
     secondary = config.get('Cli', 'secondary_schedule') if config.has_option('Cli', 'secondary_schedule') else False
 
+def get_open_incidents():
+    open_incidents_count = pagerduty.get_open_incidents(just_count=True)['total']
+    if open_incidents_count:
+        return '<h3 class="alert"><a href="https://riptano.pagerduty.com/incidents">Open tickets: %s!</a></h3>\n' % open_incidents_count
+
 def format_results(primary, secondary=False):
     if not secondary:
         dates = primary.keys()
@@ -52,18 +57,18 @@ def generate_page():
         secondary = pagerduty.get_daily_schedule(secondary)
 
     return """Content-Type: text/html\n
-    <link href="pagerduty.css" media="all" rel="stylesheet" type="text/css" />\n%s
+    <link href="pagerduty.css" media="all" rel="stylesheet" type="text/css" />\n{0}%s
     <br/>
     <a href="full-schedule.py" target="_blank">Full Schedule</a>
     """ % format_results(primary, secondary)
 
-def save_and_print(d):
+def save_and_return(d):
     result = generate_page()
     d['on_call'] = {
         'result': result,
         'last_pulled': time.time()
     }
-    print result
+    return result
 
 
 def main():
@@ -71,9 +76,9 @@ def main():
     try:
         d = shelve.open('pagerduty.db')
         if d.has_key('on_call') and (time.time() - d['on_call']['last_pulled']) < cache_timeout:
-            print d['on_call']['result']
+            print d['on_call']['result'].format(get_open_incidents())
         else:
-            save_and_print(d)
+            print save_and_return(d).format(get_open_incidents())
     finally:
         d.close()
 
