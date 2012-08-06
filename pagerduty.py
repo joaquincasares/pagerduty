@@ -72,7 +72,7 @@ def get_schedule(schedule_id=False, time_period=False, offset_days=False):
     elif time_period == 'week':
         end_date = (now + datetime.timedelta(days=7)).strftime('%Y-%m-%d')
     else:
-        end_date = (now + datetime.timedelta(days=93)).strftime('%Y-%m-%d')
+        end_date = (now + datetime.timedelta(days=92)).strftime('%Y-%m-%d')
 
     def basic_authorization(user, password):
         s = user + ":" + password
