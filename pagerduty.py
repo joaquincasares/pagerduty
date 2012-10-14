@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 
-import ast
 import datetime
 import calendar
 import getpass
 import json
 import os
+import requests
 import subprocess
 import shlex
 import sys
 import time
-import urllib2
 
 import ConfigParser
 
@@ -74,21 +73,14 @@ def get_schedule(schedule_id=False, time_period=False, offset_days=False):
     else:
         end_date = (now + datetime.timedelta(days=92)).strftime('%Y-%m-%d')
 
-    def basic_authorization(user, password):
-        s = user + ":" + password
-        return "Basic " + s.encode("base64").rstrip()
-
-    req = urllib2.Request("http://%s.pagerduty.com/api/v1/schedules/%s/entries?since=%s&until=%s" %
-                              (domain, schedule_id, start_date, end_date),
-                              headers = {"Authorization": basic_authorization(admin_email, admin_password)})
-    f = urllib2.urlopen(req)
-    return f.read()
+    return requests.get('http://%s.pagerduty.com/api/v1/schedules/%s/entries' %
+                        (domain, schedule_id),
+                        auth=(admin_email, admin_password),
+                        params={'since': start_date, 'until': end_date}).json
 
 def get_user_schedule(schedule_id=False, needle_name=False, schedule=False):
     if not schedule:
         schedule = get_schedule(schedule_id)
-
-    schedule = ast.literal_eval(schedule)
 
     result = {}
     for entry in schedule['entries'][1:]:
@@ -122,22 +114,17 @@ def get_weekly_schedule(schedule_id=False):
     schedule = get_schedule(schedule_id, time_period='week')
     return get_user_schedule(schedule_id, schedule=schedule)
 
-
 def get_open_incidents(just_count=False):
     get_authentication()
-    def basic_authorization(user, password):
-        s = user + ":" + password
-        return "Basic " + s.encode("base64").rstrip()
 
     count_parameter = ''
     if just_count:
         count_parameter = '/count'
 
-    req = urllib2.Request("https://%s.pagerduty.com/api/v1/incidents%s?status=triggered,acknowledged" %
-                              (domain, count_parameter),
-                              headers = {"Authorization": basic_authorization(admin_email, admin_password)})
-    f = urllib2.urlopen(req)
-    return json.loads(f.read())
+    return requests.get('https://%s.pagerduty.com/api/v1/incidents%s' %
+                        (domain, count_parameter),
+                        auth=(admin_email, admin_password),
+                        params={'status': 'triggered,acknowledged'}).json
 
 if __name__ == "__main__":
     print 'Running basic tests:'

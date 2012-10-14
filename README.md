@@ -23,6 +23,10 @@ incorporate a "Who's on Call" feature for easier reminders.
 Setup
 -----
 
+First install the requests package by running:
+
+    pip install requests
+
 Move `pagerduty.cfg` to `~/.pagerduty.cfg` to configure and begin.
 
 Run `./cli.py` to get a full list of options.
