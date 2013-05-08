@@ -13,16 +13,24 @@ import time
 
 import ConfigParser
 
-admin_email = False
-admin_password = False
+api_token = None
 authenticated = False
 
 time_format = '%Y-%m-%dT%H:%M:%S'
 
+class TokenAuth(requests.auth.AuthBase):
+    """Attaches PagerDuty Token Authentication to the given Request object."""
+    def __init__(self, token):
+        self.token = token
+
+    def __call__(self, r):
+        r.headers['Authorization'] = "Token token=%s" % self.token
+        return r
+
+
 def get_authentication():
     global domain
-    global admin_email
-    global admin_password
+    global api_token
     global primary_schedule
     global shift_start_hour
     global authenticated
@@ -40,8 +48,7 @@ def get_authentication():
         config.read(configfile)
 
         domain = config.get('PagerDuty', 'domain') if config.has_option('PagerDuty', 'domain') else raw_input('PagerDuty Domain: ')
-        admin_email = config.get('PagerDuty', 'email') if config.has_option('PagerDuty', 'email') else raw_input('PagerDuty Email Address: ')
-        admin_password = config.get('PagerDuty', 'pass') if config.has_option('PagerDuty', 'pass') else getpass.getpass()
+        api_token = config.get('PagerDuty', 'api_token') if config.has_option('PagerDuty', 'api_token') else raw_input('PagerDuty API Token: ')
         primary_schedule = config.get('PagerDuty', 'primary_schedule') if config.has_option('PagerDuty', 'primary_schedule') else raw_input('PagerDuty Schedule ID: ')
         shift_start_hour = int(config.get('PagerDuty', 'shift_start_hour')) * -1 if config.has_option('PagerDuty', 'shift_start_hour') else int(raw_input('Schedule Start Hour: ')) * -1
 
@@ -75,7 +82,7 @@ def get_schedule(schedule_id=False, time_period=False, offset_days=False):
 
     return requests.get('http://%s.pagerduty.com/api/v1/schedules/%s/entries' %
                         (domain, schedule_id),
-                        auth=(admin_email, admin_password),
+                        auth=TokenAuth(api_token),
                         params={'since': start_date, 'until': end_date}).json
 
 def get_user_schedule(schedule_id=False, needle_name=False, schedule=False):
@@ -123,7 +130,7 @@ def get_open_incidents(just_count=False):
 
     return requests.get('https://%s.pagerduty.com/api/v1/incidents%s' %
                         (domain, count_parameter),
-                        auth=(admin_email, admin_password),
+                        auth=TokenAuth(api_token),
                         params={'status': 'triggered,acknowledged'}).json
 
 if __name__ == "__main__":
