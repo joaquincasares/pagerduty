@@ -83,7 +83,8 @@ def get_schedule(schedule_id=False, time_period=False, offset_days=False):
     return requests.get('http://%s.pagerduty.com/api/v1/schedules/%s/entries' %
                         (domain, schedule_id),
                         auth=TokenAuth(api_token),
-                        params={'since': start_date, 'until': end_date}).json
+                        params={'since': start_date, 'until': end_date}).json()
+
 
 def get_user_schedule(schedule_id=False, needle_name=False, schedule=False):
     if not schedule:
@@ -131,7 +132,7 @@ def get_open_incidents(just_count=False):
     return requests.get('https://%s.pagerduty.com/api/v1/incidents%s' %
                         (domain, count_parameter),
                         auth=TokenAuth(api_token),
-                        params={'status': 'triggered,acknowledged'}).json
+                        params={'status': 'triggered,acknowledged'}).json()
 
 if __name__ == "__main__":
     print 'Running basic tests:'
