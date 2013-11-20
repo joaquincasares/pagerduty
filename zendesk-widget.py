@@ -40,17 +40,20 @@ def format_results(primary, secondary=False):
 
         result = ''
         for date in dates:
-            result += '<h4>Primary</h4>%s<br/>\n' % primary[date]['agent_name'] if date in primary else ''
+            result += '<h4>Primary</h4>{0}: {1}<br/>\n'.format(primary[date]['shift_start'][-9:-1], primary[date]['agent_name']) if date in primary else ''
     else:
         dates = primary.keys() + secondary.keys()
         dates = set(dates)
         dates = sorted(dates)
 
         result = ''
+        result += '<h4>Primary</h4>'
         for date in dates:
-            result += '<h4>Primary</h4>%s<br/>\n' % primary[date]['agent_name'] if date in primary else ''
-            result += '<br/>\n'
-            result += '<h4>Secondary</h4>%s<br/>\n' % secondary[date]['agent_name'] if date in secondary else ''
+            result += '{0}: {1}<br/>\n'.format(primary[date]['shift_start'][-9:-1], primary[date]['agent_name']) if date in primary else ''
+        result += '<br/>\n'
+        result += '<h4>Secondary</h4>'
+        for date in dates:
+            result += '{0}: {1}<br/>\n'.format(secondary[date]['shift_start'][-9:-1], secondary[date]['agent_name']) if date in secondary else ''
 
     return result
 
