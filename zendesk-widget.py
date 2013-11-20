@@ -40,7 +40,7 @@ def format_results(primary, secondary=False):
 
         result = ''
         for date in dates:
-            result += '<h4>Primary</h4>%s<br/>\n' % primary[date]['agent_name'] if date in primary else ''
+            result += '<h4>Primary</h4>{0} {1}<br/>\n'.format(primary[date]['shift_start'].split(' - ')[1], primary[date]['agent_name']) if date in primary else ''
     else:
         dates = primary.keys() + secondary.keys()
         dates = set(dates)
@@ -48,9 +48,10 @@ def format_results(primary, secondary=False):
 
         result = ''
         for date in dates:
-            result += '<h4>Primary</h4>%s<br/>\n' % primary[date]['agent_name'] if date in primary else ''
-            result += '<br/>\n'
-            result += '<h4>Secondary</h4>%s<br/>\n' % secondary[date]['agent_name'] if date in secondary else ''
+            result += '<h4>Primary</h4>{0} {1}<br/>\n'.format(primary[date]['shift_start'].split(' - ')[1], primary[date]['agent_name']) if date in primary else ''
+        result += '<br/>\n'
+        for date in dates:
+            result += '<h4>Secondary</h4>{0} {1}<br/>\n'.format(secondary[date]['shift_start'].split(' - ')[1], secondary[date]['agent_name']) if date in secondary else ''
 
     return result
 
@@ -79,7 +80,7 @@ def save_and_return(d):
 def main():
     read_configurations()
     try:
-        d = shelve.open('pagerduty.db')
+        d = shelve.open('pagerduty')
         if d.has_key('on_call') and (time.time() - d['on_call']['last_pulled']) < cache_timeout:
             print d['on_call']['result'].format(get_open_incidents())
         else:
