@@ -47,11 +47,13 @@ def format_results(primary, secondary=False):
         dates = sorted(dates)
 
         result = ''
+        result += '<h4>Primary</h4>'
         for date in dates:
-            result += '<h4>Primary</h4>{0}: {1}<br/>\n'.format(primary[date]['shift_start'][-9:-1], primary[date]['agent_name']) if date in primary else ''
+            result += '{0}: {1}<br/>\n'.format(primary[date]['shift_start'][-9:-1], primary[date]['agent_name']) if date in primary else ''
         result += '<br/>\n'
+        result += '<h4>Secondary</h4>'
         for date in dates:
-            result += '<h4>Secondary</h4>{0}: {1}<br/>\n'.format(secondary[date]['shift_start'][-9:-1], secondary[date]['agent_name']) if date in secondary else ''
+            result += '{0}: {1}<br/>\n'.format(secondary[date]['shift_start'][-9:-1], secondary[date]['agent_name']) if date in secondary else ''
 
     return result
 
