@@ -147,15 +147,16 @@ The Support Team
     txt = email % format_results(primary, secondary)
     html = email.replace('\n', '<br>\n') % format_results(primary, secondary, html=True)
 
-    print txt
+    #print txt
     email_list = extract_emails(primary, secondary)
-    print 'Email list: %s' % email_list
+    #print 'Email list: %s' % email_list
 
     if bypass_prompts or raw_input('Send email? [y/N] ').lower() == 'y':
         email_msg("You're on call today", email_list, txt, html)
-        print "Daily Support Schedule Emailed!"
+        #print "Daily Support Schedule Emailed!"
     else:
-        print "Email not sent."
+        #print "Email not sent."
+        pass
 
 def email_week():
     global secondary
@@ -177,15 +178,16 @@ The Support Team
     txt = email % format_results(primary, secondary)
     html = email.replace('\n', '<br>\n') % format_results(primary, secondary, html=True)
 
-    print txt
+    #print txt
     email_list = extract_emails(primary, secondary)
-    print 'Email list: %s' % email_list
+    #print 'Email list: %s' % email_list
 
     if bypass_prompts or raw_input('Send email? [y/N] ').lower() == 'y':
         email_msg("You're on call this week", email_list, txt, html)
-        print "Weekly Support Schedule Emailed!"
+        #print "Weekly Support Schedule Emailed!"
     else:
-        print "Email not sent."
+        #print "Email not sent."
+        pass
 
 
 
