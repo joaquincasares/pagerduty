@@ -80,7 +80,7 @@ def get_schedule(schedule_id=False, time_period=False, offset_days=False):
     else:
         end_date = (now + datetime.timedelta(days=92)).strftime('%Y-%m-%d')
 
-    return requests.get('http://%s.pagerduty.com/api/v1/schedules/%s/entries' %
+    return requests.get('https://%s.pagerduty.com/api/v1/schedules/%s/entries' %
                         (domain, schedule_id),
                         auth=TokenAuth(api_token),
                         params={'since': start_date, 'until': end_date}).json()
